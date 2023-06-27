@@ -1,4 +1,4 @@
-module Danial-Movahed.github.io/HolidayFinderGo
+module Danial-Movahed.github.io/HolidayFinderApiServer
 
 go 1.20
 
