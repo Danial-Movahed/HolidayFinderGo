@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "Danial-Movahed.github.io/clientServerGrpc";
+
+
+package apiServerGrpc;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc RequestHoliday (holidayRequest) returns (holiday) {}
+}
+
+// The request message containing the user's name.
+message holidayRequest {
+  string day = 1;
+  string month = 2;
+  string year = 3;
+}
+
+// The response message containing the greetings
+message holiday {
+  string name = 1;
+  string description = 2;
+}
