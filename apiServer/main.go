@@ -12,11 +12,15 @@ type holiday struct {
 	Description string `json:"description"`
 }
 
-func main() {
+func startApi() {
 	router := gin.Default()
 	router.GET("/holiday", getHoliday)
 
-	router.Run("localhost:8080")
+	router.Run("localhost:8888")
+}
+
+func main() {
+	startApi()
 }
 
 func getHoliday(c *gin.Context) {
@@ -32,8 +36,7 @@ func getHoliday(c *gin.Context) {
 	if !err {
 		fmt.Println(err)
 	}
-
-	hol := holiday{Name: day + month + year, Description: "hmm"}
+	hol := grpcClient(day, month, year)
 
 	c.IndentedJSON(http.StatusOK, hol)
 
