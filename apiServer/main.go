@@ -16,7 +16,7 @@ func startApi() {
 	router := gin.Default()
 	router.GET("/holiday", getHoliday)
 
-	router.Run("localhost:8888")
+	router.Run(":8888")
 }
 
 func main() {
