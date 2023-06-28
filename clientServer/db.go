@@ -15,7 +15,7 @@ type DB struct {
 	DBuser     string
 	DBpassword string
 	DBname     string
-        SSLMode    string
+	SSLMode    string
 }
 
 func (db *DB) Connect() error {
@@ -41,7 +41,7 @@ func (db *DB) Close() error {
 func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 	date := fmt.Sprintf("%s-%s-%s", req.GetYear(), req.GetMonth(), req.GetDay())
 
-	selectionQuery := "SELECT FROM Holidays WHERE date = '$1'"
+	selectionQuery := "SELECT FROM Holidays WHERE date = $1"
 	rows, err := db.connection.Query(selectionQuery, date)
 
 	if err != nil {
@@ -57,6 +57,7 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 		if name == "" && description == "" {
 			return grpc.Holiday{}, fmt.Errorf("no holidays on %s", date)
 		}
+		fmt.Printf("Holiday name: %s\nHoliday description: %s", name, description)
 		return grpc.Holiday{
 			Name:        name,
 			Description: description,

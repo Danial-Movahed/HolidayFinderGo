@@ -6,5 +6,5 @@ const (
 	DBuser     = "golearning"
 	DBpassword = "golearning"
 	DBname     = "test"
-        SSLMode    = "require"
+	SSLMode    = "require"
 )
