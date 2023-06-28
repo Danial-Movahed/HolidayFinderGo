@@ -90,6 +90,7 @@ func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
 		if err != nil {
 			return grpc.Holiday{}, err
 		}
+		fmt.Println("found!")
 		return grpc.Holiday{
 			Name:        hol.Name,
 			Description: hol.Description,
