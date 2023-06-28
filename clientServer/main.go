@@ -1,6 +1,11 @@
 package main
 
+import "fmt"
+
 func main() {
-	DBConnection.Connect()
+	error := DBConnection.Connect()
+	if error != nil {
+		fmt.Println(error)
+	}
 	StartGrpcServer()
 }
