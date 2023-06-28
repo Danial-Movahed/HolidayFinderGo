@@ -19,7 +19,7 @@ type DB struct {
 }
 
 func (db *DB) Connect() error {
-	connStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=%s", db.DBhost, DBport, db.DBname, db.DBuser, db.DBpassword, db.SSLMode)
+	connStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=%s", db.DBhost, db.DBport, db.DBname, db.DBuser, db.DBpassword, db.SSLMode)
 	connection, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
@@ -52,25 +52,44 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 		if err := rows.Scan(&tmp, &name, &description); err != nil {
 			return grpc.Holiday{}, err
 		}
-		if name == "" && description == "" {
-			return grpc.Holiday{Name: "Nothing", Description: "No holidays on this date!"}, err
-		}
 		return grpc.Holiday{
 			Name:        name,
 			Description: description,
 		}, err
 
-	} else {
-		// If no holiday is found reports to client and asks for new information
-		// Then saves to Database and returns results to gRtc server
-		fmt.Println("Not implemented!")
+	}
+	holiday := get_holiday_request(HolidayRequest{
+		Day:   req.GetDay(),
+		Month: req.GetMonth(),
+		Year:  req.GetYear()})
+	fmt.Println(holiday)
+	tmp, err := db.registerHoliday(&date, holiday)
+	if err != nil {
+		fmt.Printf("Im here4\n")
 		return grpc.Holiday{}, err
 	}
+	return grpc.Holiday{
+		Name:        tmp.Name,
+		Description: tmp.Description,
+	}, nil
+}
 
+func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
+	registerQuery := "INSERT INTO holidays(date, name, description) VALUES ($1, $2, $3)"
+	res, err := db.connection.Exec(registerQuery, date, hol.Name, hol.Description)
+	if err != nil {
+		fmt.Printf("Im here1\n")
+		return grpc.Holiday{}, err
+	}
+	_, err = res.RowsAffected()
+	if err != nil {
+		return grpc.Holiday{}, err
+	}
+	fmt.Println("found!")
+	return grpc.Holiday{
+		Name:        hol.Name,
+		Description: hol.Description,
+	}, err
 }
 
 var DBConnection = DB{DBhost: DBhost, DBport: DBport, DBuser: DBuser, DBpassword: DBpassword, DBname: DBname}
-
-// func (db *DB) registerHoliday() {
-
-// }
