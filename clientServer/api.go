@@ -94,7 +94,7 @@ func get_holiday_request(req HolidayRequest) (holi Holiday) {
 
 	}
 	//fmt.Println(holidays.Response.Holidays)
-	holi.Name = "Not Holiday"
-	holi.Description = ""
+	holi.Name = "Nothing"
+	holi.Description = "No holidays on this date!"
 	return holi
 }
