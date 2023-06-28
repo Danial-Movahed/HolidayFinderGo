@@ -52,9 +52,6 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 		if err := rows.Scan(&tmp, &name, &description); err != nil {
 			return grpc.Holiday{}, err
 		}
-		if name == "" && description == "" {
-			return grpc.Holiday{Name: "Nothing", Description: "No holidays on this date!"}, err
-		}
 		return grpc.Holiday{
 			Name:        name,
 			Description: description,
@@ -66,24 +63,26 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 			Month: req.GetMonth(),
 			Year:  req.GetYear(),
 		})
+		fmt.Println(holiday)
 		tmp, err := db.registerHoliday(&date, holiday)
 		fmt.Println(err)
 		if err != nil {
+			fmt.Printf("Im here4\n")
 			return grpc.Holiday{}, err
-		} else {
-			return grpc.Holiday{
-				Name:        tmp.Name,
-				Description: tmp.Description,
-			}, err
 		}
-	}
+		return grpc.Holiday{
+			Name:        tmp.Name,
+			Description: tmp.Description,
+		}, err
 
+	}
 }
 
 func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
 	registerQuery := "INSERT INTO holidays(date, name, description) VALUES ($1, $2, $3)"
 	res, err := db.connection.Exec(registerQuery, date, hol.Name, hol.Description)
 	if err != nil {
+		fmt.Printf("Im here1\n")
 		return grpc.Holiday{}, err
 	} else {
 		_, err := res.RowsAffected()
@@ -95,7 +94,6 @@ func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
 			Name:        hol.Name,
 			Description: hol.Description,
 		}, err
-	}
 }
 
 var DBConnection = DB{DBhost: DBhost, DBport: DBport, DBuser: DBuser, DBpassword: DBpassword, DBname: DBname}
