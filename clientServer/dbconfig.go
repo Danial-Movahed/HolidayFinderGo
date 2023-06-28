@@ -5,6 +5,6 @@ const (
 	DBport     = 5432
 	DBuser     = "golearning"
 	DBpassword = "golearning"
-	DBname     = "test"
+	DBname     = "golearning"
 	SSLMode    = "require"
 )

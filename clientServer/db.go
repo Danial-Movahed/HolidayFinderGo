@@ -40,24 +40,21 @@ func (db *DB) Close() error {
 
 func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 	date := fmt.Sprintf("%s-%s-%s", req.GetYear(), req.GetMonth(), req.GetDay())
-
-	selectionQuery := `SELECT FROM Holidays WHERE date = "$1"`
+	selectionQuery := fmt.Sprintf("SELECT * FROM holidays WHERE date = $1")
 	rows, err := db.connection.Query(selectionQuery, date)
 
 	if err != nil {
 		return grpc.Holiday{}, err
 	}
 	defer rows.Close()
-
 	if rows.Next() {
-		var name, description string
-		if err := rows.Scan(&name, &description); err != nil {
+		var tmp, name, description string
+		if err := rows.Scan(&tmp, &name, &description); err != nil {
 			return grpc.Holiday{}, err
 		}
 		if name == "" && description == "" {
-			return grpc.Holiday{}, fmt.Errorf("no holidays on %s", date)
+			return grpc.Holiday{Name: "Nothing", Description: "No holidays on this date!"}, err
 		}
-		fmt.Printf("Holiday name: %s\nHoliday description: %s", name, description)
 		return grpc.Holiday{
 			Name:        name,
 			Description: description,
@@ -66,6 +63,7 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 	} else {
 		// If no holiday is found reports to client and asks for new information
 		// Then saves to Database and returns results to gRtc server
+		fmt.Println("Not implemented!")
 		return grpc.Holiday{}, err
 	}
 

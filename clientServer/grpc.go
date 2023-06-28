@@ -18,6 +18,9 @@ type server struct {
 func (s *server) RequestHoliday(ctx context.Context, in *pb.HolidayRequest) (*pb.Holiday, error) {
 	fmt.Printf("Received: %s %s %s\n", in.GetDay(), in.GetMonth(), in.GetYear())
 	retHoliday, error := DBConnection.GetHoliday(in)
+	if error != nil {
+		fmt.Println(error)
+	}
 	return &retHoliday, error
 }
 
