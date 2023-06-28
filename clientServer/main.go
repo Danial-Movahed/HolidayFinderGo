@@ -1,10 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
-
 func main() {
-	fmt.Println("Helloworld")
+	DBConnection.Connect()
 	StartGrpcServer()
 }

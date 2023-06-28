@@ -1,4 +1,4 @@
-package db
+package main
 
 import (
 	"database/sql"
@@ -10,10 +10,15 @@ import (
 
 type DB struct {
 	connection *sql.DB
+	DBhost     string
+	DBport     int
+	DBuser     string
+	DBpassword string
+	DBname     string
 }
 
 func (db *DB) Connect() error {
-	connStr := fmt.Sprintf("host=%s:%v dbname=%s user=%s password=%s sslmode=require", host, port, user, password, dbname)
+	connStr := fmt.Sprintf("host=%s:%v dbname=%s user=%s password=%s sslmode=require", db.DBhost, DBport, db.DBname, db.DBuser, db.DBpassword)
 	connection, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
@@ -33,7 +38,7 @@ func (db *DB) Close() error {
 }
 
 func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
-	date := fmt.Sprintf("%s-%s-%s", req.Year, req.Month, req.Day)
+	date := fmt.Sprintf("%s-%s-%s", req.GetYear(), req.GetMonth(), req.GetDay())
 
 	selectionQuery := "SELECT FROM Holidays WHERE date = '$1'"
 	rows, err := db.connection.Query(selectionQuery, date)
@@ -63,6 +68,8 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 	}
 
 }
+
+var DBConnection = DB{DBhost: DBhost, DBport: DBport, DBuser: DBuser, DBpassword: DBpassword, DBname: DBname}
 
 // func (db *DB) registerHoliday() {
 
