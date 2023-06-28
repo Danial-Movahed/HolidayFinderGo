@@ -57,25 +57,21 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 			Description: description,
 		}, err
 
-	} else {
-		holiday := get_holiday_request(HolidayRequest{
-			Day:   req.GetDay(),
-			Month: req.GetMonth(),
-			Year:  req.GetYear(),
-		})
-		fmt.Println(holiday)
-		tmp, err := db.registerHoliday(&date, holiday)
-		fmt.Println(err)
-		if err != nil {
-			fmt.Printf("Im here4\n")
-			return grpc.Holiday{}, err
-		}
-		return grpc.Holiday{
-			Name:        tmp.Name,
-			Description: tmp.Description,
-		}, err
-
 	}
+	holiday := get_holiday_request(HolidayRequest{
+		Day:   req.GetDay(),
+		Month: req.GetMonth(),
+		Year:  req.GetYear()})
+	fmt.Println(holiday)
+	tmp, err := db.registerHoliday(&date, holiday)
+	if err != nil {
+		fmt.Printf("Im here4\n")
+		return grpc.Holiday{}, err
+	}
+	return grpc.Holiday{
+		Name:        tmp.Name,
+		Description: tmp.Description,
+	}, nil
 }
 
 func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
@@ -84,16 +80,16 @@ func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
 	if err != nil {
 		fmt.Printf("Im here1\n")
 		return grpc.Holiday{}, err
-	} else {
-		_, err := res.RowsAffected()
-		if err != nil {
-			return grpc.Holiday{}, err
-		}
-		fmt.Println("found!")
-		return grpc.Holiday{
-			Name:        hol.Name,
-			Description: hol.Description,
-		}, err
+	}
+	_, err = res.RowsAffected()
+	if err != nil {
+		return grpc.Holiday{}, err
+	}
+	fmt.Println("found!")
+	return grpc.Holiday{
+		Name:        hol.Name,
+		Description: hol.Description,
+	}, err
 }
 
 var DBConnection = DB{DBhost: DBhost, DBport: DBport, DBuser: DBuser, DBpassword: DBpassword, DBname: DBname}
