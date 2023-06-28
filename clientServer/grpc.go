@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-var port = 50051
+var gRPCport = 50051
 
 type server struct {
 	pb.UnimplementedGreeterServer
@@ -17,11 +17,15 @@ type server struct {
 
 func (s *server) RequestHoliday(ctx context.Context, in *pb.HolidayRequest) (*pb.Holiday, error) {
 	fmt.Printf("Received: %s %s %s\n", in.GetDay(), in.GetMonth(), in.GetYear())
-	return &pb.Holiday{Name: "test", Description: fmt.Sprintf("%s %s %s", in.GetDay(), in.GetMonth(), in.GetYear())}, nil
+	retHoliday, error := DBConnection.GetHoliday(in)
+	if error != nil {
+		fmt.Println(error)
+	}
+	return &retHoliday, error
 }
 
 func StartGrpcServer() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", gRPCport))
 	if err != nil {
 		fmt.Printf("failed to listen: %v\n", err)
 	}
