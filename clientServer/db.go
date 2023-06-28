@@ -65,6 +65,7 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 		})
 		fmt.Println(holiday)
 		tmp, err := db.registerHoliday(&date, holiday)
+		fmt.Println(err)
 		if err != nil {
 			fmt.Printf("Im here4\n")
 			return grpc.Holiday{}, err

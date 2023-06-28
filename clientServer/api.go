@@ -83,12 +83,12 @@ func get_holiday_request(req HolidayRequest) (holi Holiday) {
 	}
 	//fmt.Println(number_of_holidays)
 	for i := 0; i < number_of_holidays; i++ {
-		fmt.Println(holidays.Response.Holidays[i].Date.Datetime)
+		//fmt.Println(holidays.Response.Holidays[i].Date.Datetime)
 		if int(holidays.Response.Holidays[i].Date.Datetime.Year) == year && int(holidays.Response.Holidays[i].Date.Datetime.Month) == month && int(holidays.Response.Holidays[i].Date.Datetime.Day) == day {
 
 			holi.Name = holidays.Response.Holidays[i].Name
 			holi.Description = holidays.Response.Holidays[i].Description
-			fmt.Println(i)
+			//fmt.Println(i)
 			return holi
 		}
 
