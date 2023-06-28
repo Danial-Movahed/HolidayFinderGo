@@ -98,8 +98,3 @@ func get_holiday_request(req HolidayRequest) (holi Holiday) {
 	holi.Description = ""
 	return holi
 }
-
-func main() {
-	fmt.Println(get_holiday_request(HolidayRequest{"27", "12", "2022"}))
-
-}

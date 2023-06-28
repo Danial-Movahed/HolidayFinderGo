@@ -19,7 +19,7 @@ type DB struct {
 }
 
 func (db *DB) Connect() error {
-	connStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=%s", db.DBhost, DBport, db.DBname, db.DBuser, db.DBpassword, db.SSLMode)
+	connStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=%s", db.DBhost, db.DBport, db.DBname, db.DBuser, db.DBpassword, db.SSLMode)
 	connection, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
@@ -61,16 +61,36 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 		}, err
 
 	} else {
-		// If no holiday is found reports to client and asks for new information
-		// Then saves to Database and returns results to gRtc server
-		fmt.Println("Not implemented!")
-		return grpc.Holiday{}, err
+		holiday := get_holiday_request(HolidayRequest{
+			Day:   req.GetDay(),
+			Month: req.GetMonth(),
+			Year:  req.GetYear(),
+		})
+		grpcHoliday, err := db.registerHoliday(&date, holiday)
+		if err != nil {
+			return grpc.Holiday{}, err
+		} else {
+			return grpcHoliday, err
+		}
 	}
 
 }
 
+func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
+	registerQuery := "INSERT INTO holidays(date, name, description) VALUES ($1, $2, $3)"
+	res, err := db.connection.Exec(registerQuery, date, hol.Name, hol.Description)
+	if err != nil {
+		return grpc.Holiday{}, err
+	} else {
+		_, err := res.RowsAffected()
+		if err != nil {
+			return grpc.Holiday{}, err
+		}
+		return grpc.Holiday{
+			Name:        hol.Name,
+			Description: hol.Description,
+		}, err
+	}
+}
+
 var DBConnection = DB{DBhost: DBhost, DBport: DBport, DBuser: DBuser, DBpassword: DBpassword, DBname: DBname}
-
-// func (db *DB) registerHoliday() {
-
-// }
