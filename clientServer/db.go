@@ -15,10 +15,11 @@ type DB struct {
 	DBuser     string
 	DBpassword string
 	DBname     string
+        SSLMode    string
 }
 
 func (db *DB) Connect() error {
-	connStr := fmt.Sprintf("host=%s:%v dbname=%s user=%s password=%s sslmode=require", db.DBhost, DBport, db.DBname, db.DBuser, db.DBpassword)
+	connStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=%s", db.DBhost, DBport, db.DBname, db.DBuser, db.DBpassword, db.SSLMode)
 	connection, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
