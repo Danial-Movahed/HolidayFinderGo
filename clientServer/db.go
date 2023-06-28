@@ -66,11 +66,14 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 			Month: req.GetMonth(),
 			Year:  req.GetYear(),
 		})
-		grpcHoliday, err := db.registerHoliday(&date, holiday)
+		tmp, err := db.registerHoliday(&date, holiday)
 		if err != nil {
 			return grpc.Holiday{}, err
 		} else {
-			return grpcHoliday, err
+			return grpc.Holiday{
+				Name:        tmp.Name,
+				Description: tmp.Description,
+			}, err
 		}
 	}
 
