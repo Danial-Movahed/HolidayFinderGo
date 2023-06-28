@@ -41,7 +41,7 @@ func (db *DB) Close() error {
 func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 	date := fmt.Sprintf("%s-%s-%s", req.GetYear(), req.GetMonth(), req.GetDay())
 
-	selectionQuery := "SELECT FROM Holidays WHERE date = $1"
+	selectionQuery := `SELECT FROM Holidays WHERE date = "$1"`
 	rows, err := db.connection.Query(selectionQuery, date)
 
 	if err != nil {
