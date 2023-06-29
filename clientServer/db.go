@@ -100,12 +100,11 @@ func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
 func (db *DB) checkNumberOfHolidays() (int, error) {
 	selectionQuery := "SELECT COUNT(*) FROM holidays"
 	var count int
-	maxTableSize := 1000
 	err := db.connection.QueryRow(selectionQuery).Scan(&count)
 	if err != nil {
 		return count, nil
 	}
-	if count == maxTableSize {
+	if count == DBmaxTableSize {
 		deletionQuery := "DELETE FROM holidays LIMIT 1"
 		_, err := db.connection.Exec(deletionQuery)
 		if err != nil {
