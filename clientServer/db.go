@@ -85,11 +85,39 @@ func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
 	if err != nil {
 		return grpc.Holiday{}, err
 	}
+	numOfRows, err := db.checkNumberOfHolidays()
+	if err != nil {
+		return grpc.Holiday{}, err
+	}
+	fmt.Println(numOfRows)
 	fmt.Println("found!")
 	return grpc.Holiday{
 		Name:        hol.Name,
 		Description: hol.Description,
 	}, err
+}
+
+func (db *DB) checkNumberOfHolidays() (int, error) {
+	selectionQuery := "SELECT COUNT(*) FROM holidays"
+	var count int
+	maxTableSize := 1000
+	err := db.connection.QueryRow(selectionQuery).Scan(&count)
+	if err != nil {
+		return count, nil
+	}
+	if count == maxTableSize {
+		deletionQuery := "DELETE FROM holidays LIMIT 1"
+		_, err := db.connection.Exec(deletionQuery)
+		if err != nil {
+			return count, err
+		}
+		err = db.connection.QueryRow(selectionQuery).Scan(&count)
+		if err != nil {
+			return count, nil
+		}
+		return count, err
+	}
+	return count, err
 }
 
 var DBConnection = DB{DBhost: DBhost, DBport: DBport, DBuser: DBuser, DBpassword: DBpassword, DBname: DBname}
