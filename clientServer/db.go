@@ -65,10 +65,8 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 	if err != nil {
 		return grpc.Holiday{}, err
 	}
-	fmt.Println(holiday)
 	tmp, err := db.registerHoliday(&date, holiday)
 	if err != nil {
-		fmt.Printf("Im here4\n")
 		return grpc.Holiday{}, err
 	}
 	return grpc.Holiday{
@@ -81,7 +79,6 @@ func (db *DB) registerHoliday(date *string, hol Holiday) (grpc.Holiday, error) {
 	registerQuery := "INSERT INTO holidays(date, name, description) VALUES ($1, $2, $3)"
 	res, err := db.connection.Exec(registerQuery, date, hol.Name, hol.Description)
 	if err != nil {
-		fmt.Printf("Im here1\n")
 		return grpc.Holiday{}, err
 	}
 	_, err = res.RowsAffected()
@@ -118,6 +115,7 @@ func (db *DB) checkNumberOfHolidays() (int, error) {
 		if err != nil {
 			return count, nil
 		}
+
 		return count, err
 	}
 	return count, err
