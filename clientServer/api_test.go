@@ -18,9 +18,12 @@ func TestGetHolidayRequest(t *testing.T) {
 		{input: HolidayRequest{Day: "35", Month: "1", Year: "1234"}, want: Holiday{Name: "Nothing", Description: "No holidays on this date!"}}}
 
 	for _, test := range tests {
-		got := get_holiday_request(test.input)
+		got, err := get_holiday_request(test.input)
+		if err != nil {
+			t.Error(err)
+		}
 		if got != test.want {
-			t.Errorf("handler returned wrong status code: want %s, got %s", test.want, got)
+			t.Errorf("handler returned wrong status code: want %s, got %s\n", test.want, got)
 		}
 	}
 }
