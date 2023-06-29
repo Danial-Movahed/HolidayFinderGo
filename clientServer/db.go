@@ -6,19 +6,42 @@ import (
 
 	grpc "Danial-Movahed.github.io/clientServerGrpc"
 	_ "github.com/lib/pq"
+	"github.com/spf13/viper"
 )
 
 type DB struct {
-	connection *sql.DB
-	DBhost     string
-	DBport     int
-	DBuser     string
-	DBpassword string
-	DBname     string
-	SSLMode    string
+	connection   *sql.DB
+	DBhost       string
+	DBport       int
+	DBuser       string
+	DBpassword   string
+	DBname       string
+	SSLMode      string
+	maxTableSize int
+}
+
+func (db *DB) ReadFromConfig() {
+	viper.SetConfigName("dbconfig")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("failed to read configuration file: %s", err))
+	}
+
+	db.DBhost = viper.GetString("host")
+	db.DBport = viper.GetInt("port")
+	db.DBuser = viper.GetString("username")
+	db.DBpassword = viper.GetString("password")
+	db.DBname = viper.GetString("name")
+	db.SSLMode = viper.GetString("SSLmode")
+	db.maxTableSize = viper.GetInt("maxTableSize")
+
 }
 
 func (db *DB) Connect() error {
+	db.ReadFromConfig()
 	connStr := fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=%s", db.DBhost, db.DBport, db.DBname, db.DBuser, db.DBpassword, db.SSLMode)
 	connection, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -104,7 +127,7 @@ func (db *DB) checkNumberOfHolidays() (int, error) {
 	if err != nil {
 		return count, nil
 	}
-	if count == DBmaxTableSize {
+	if count == db.maxTableSize {
 		deletionQuery := "DELETE FROM holidays LIMIT 1"
 		_, err := db.connection.Exec(deletionQuery)
 		if err != nil {
@@ -120,4 +143,4 @@ func (db *DB) checkNumberOfHolidays() (int, error) {
 	return count, err
 }
 
-var DBConnection = DB{DBhost: DBhost, DBport: DBport, DBuser: DBuser, DBpassword: DBpassword, DBname: DBname}
+var DBConnection = DB{}
