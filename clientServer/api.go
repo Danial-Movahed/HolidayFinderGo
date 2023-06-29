@@ -44,7 +44,7 @@ type Holiday struct {
 	Description string
 }
 
-func get_holiday_request(req HolidayRequest) (holi Holiday) {
+func get_holiday_request(req HolidayRequest) (Holiday, error) {
 	requestURL := "https://calendarific.com/api/v2/holidays?api_key=173842ca0f6299a6ec40c835b958e49f1d63548f&country=IR&year=" + req.Year
 	res, err := http.Get(requestURL) // a = requests.get()
 	if err != nil {
@@ -59,42 +59,40 @@ func get_holiday_request(req HolidayRequest) (holi Holiday) {
 
 	var holidays Res
 
-	errr := json.Unmarshal(resBytes, &holidays)
-	if errr != nil {
+	err = json.Unmarshal(resBytes, &holidays)
+	if err != nil {
 		fmt.Println("Can not unmarshal JSON")
 	}
 	number_of_holidays := len(holidays.Response.Holidays)
 	//a := int(holidays.Response.Holidays[10].Date.Datetime.Year)
 	//fmt.Println(a)
-	year, errr := strconv.Atoi(req.Year)
-	if errr != nil {
+	year, err := strconv.Atoi(req.Year)
+	if err != nil {
 		fmt.Println("Error during conversion")
-		return
+		return Holiday{}, err
 	}
-	month, errrr := strconv.Atoi(req.Month)
-	if errrr != nil {
+	month, err := strconv.Atoi(req.Month)
+	if err != nil {
 		fmt.Println("Error during conversion")
-		return
+		return Holiday{}, err
 	}
-	day, errrrr := strconv.Atoi(req.Day)
-	if errrrr != nil {
+	day, err := strconv.Atoi(req.Day)
+	if err != nil {
 		fmt.Println("Error during conversion")
-		return
+		return Holiday{}, err
 	}
 	//fmt.Println(number_of_holidays)
 	for i := 0; i < number_of_holidays; i++ {
 		//fmt.Println(holidays.Response.Holidays[i].Date.Datetime)
 		if int(holidays.Response.Holidays[i].Date.Datetime.Year) == year && int(holidays.Response.Holidays[i].Date.Datetime.Month) == month && int(holidays.Response.Holidays[i].Date.Datetime.Day) == day {
-
-			holi.Name = holidays.Response.Holidays[i].Name
-			holi.Description = holidays.Response.Holidays[i].Description
+			holi := Holiday{Name: holidays.Response.Holidays[i].Name, Description: holidays.Response.Holidays[i].Description}
 			//fmt.Println(i)
-			return holi
+			return holi, nil
 		}
 
 	}
 	//fmt.Println(holidays.Response.Holidays)
-	holi.Name = "Nothing"
-	holi.Description = "No holidays on this date!"
-	return holi
+	holi := Holiday{Name: "Nothing", Description: "No holidays on this date!"}
+	//fmt.Println(i)
+	return holi, nil
 }

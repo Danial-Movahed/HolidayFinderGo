@@ -22,7 +22,7 @@ func grpcClient(day string, month string, year string) *holiday {
 	c := pb.NewGreeterClient(conn)
 
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(2)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
 	defer cancel()
 	r, err := c.RequestHoliday(ctx, &pb.HolidayRequest{Day: day, Month: month, Year: year})
 	if err != nil {

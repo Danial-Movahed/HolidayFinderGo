@@ -58,10 +58,13 @@ func (db *DB) GetHoliday(req *grpc.HolidayRequest) (grpc.Holiday, error) {
 		}, err
 
 	}
-	holiday := get_holiday_request(HolidayRequest{
+	holiday, err := get_holiday_request(HolidayRequest{
 		Day:   req.GetDay(),
 		Month: req.GetMonth(),
 		Year:  req.GetYear()})
+	if err != nil {
+		return grpc.Holiday{}, err
+	}
 	fmt.Println(holiday)
 	tmp, err := db.registerHoliday(&date, holiday)
 	if err != nil {
